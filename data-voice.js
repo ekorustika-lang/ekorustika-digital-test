@@ -3,7 +3,9 @@
 const AI_ENDPOINT = '';
 const $ = id => document.getElementById(id);
 $('year').textContent = String(new Date().getFullYear());
-const GREETING = 'Dobro došli u EKORUSTIKA DIGITALNI ALATI! Ja sam Data, vaš digitalni AI asistent. Mogu vam pomoći pronaći digitalno rješenje za posao i svakodnevni život. Slobodno me pitajte što vas zanima.';
+const GREETING = 'Dobro do\u0161li u EKORUSTIKA! Ja sam Data, va\u0161 osobni AI asistent. Kako vam mogu pomo\u0107i?';
+// Izgovor: na ekranu ostaje EKORUSTIKA, a glas cita fonetski 'Eko rustika' (s padezima).
+function spoken(t){return String(t).replace(/\bEKORUSTIK(A|E|I|U|OM)\b/gi,(m,e)=>'Eko rustik'+e.toLowerCase()).replace(/Dobro do\u0161li u Eko rustika/g,'Dobro do\u0161li u Eko rustiku')}
 const tts = 'speechSynthesis' in window;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let speaking=false, listening=false, muted=false, inFlight=false, hist=[], aiOn=false;
@@ -13,7 +15,7 @@ function bubble(m,k){const e=document.createElement('div');e.className='bubble '
 function hrVoice(){const v=speechSynthesis.getVoices();return v.find(x=>/^hr/i.test(x.lang))||v.find(x=>/^(sr|bs|sl)/i.test(x.lang))}
 let rec=null;
 function stopListening(){if(rec&&listening){try{rec.abort()}catch{}}listening=false;$('microphone').classList.remove('on')}
-function say(text){return new Promise(res=>{if(!tts||muted){res();return}stopListening();speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='hr-HR';const v=hrVoice();if(v)u.voice=v;u.onstart=()=>{speaking=true;setState('speaking','GOVORI')};const end=()=>{speaking=false;setState('','SPREMAN');res()};u.onend=end;u.onerror=end;speechSynthesis.speak(u)})}
+function say(text){return new Promise(res=>{if(!tts||muted){res();return}stopListening();speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(spoken(text));u.lang='hr-HR';u.rate=0.95;u.pitch=1;const v=hrVoice();if(v)u.voice=v;u.onstart=()=>{speaking=true;setState('speaking','GOVORI')};const end=()=>{speaking=false;setState('','SPREMAN');res()};u.onend=end;u.onerror=end;speechSynthesis.speak(u)})}
 function stopSpeaking(){if(tts)speechSynthesis.cancel();speaking=false;setState('','SPREMAN')}
 if(SR){rec=new SR();rec.lang='hr-HR';rec.interimResults=false;rec.maxAlternatives=1;
  rec.onresult=e=>{const t=e.results?.[0]?.[0]?.transcript||'';if(t){$('question').value=t;send()}};
