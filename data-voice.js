@@ -26,11 +26,11 @@ $('stopVoice').addEventListener('click',()=>{stopSpeaking();status('Govor je zau
 let greeted=false;
 function greet(){greeted=true;muted=false;bubble(GREETING,'system');say(GREETING);$('greet').textContent='🔁 PONOVI POZDRAV'}
 $('greet').addEventListener('click',greet);
-// Automatski pozdrav: preglednici obicno traze dodir prije zvuka, pa pokusavamo i na prvi dodir stranice.
-addEventListener('pointerdown',function f(e){removeEventListener('pointerdown',f);if(!greeted&&!e.target.closest('button,a,input,textarea'))greet()});
+// Pozdrav se pokrece pri prvom otvaranju razgovora.
+
 const offline=()=>{document.body.classList.toggle('offline',!navigator.onLine)};addEventListener('online',offline);addEventListener('offline',offline);offline();
 async function checkAI(){const box=$('aiInfo');if(!AI_ENDPOINT){box.innerHTML='<strong>Status AI razgovora:</strong> čeka povezivanje. Glas, mikrofon i upiti već rade, ali Data još ne daje AI odgovore.';return}
- try{const r=await fetch(AI_ENDPOINT+'/status');const d=await r.json();aiOn=!!d.enabled;box.innerHTML=aiOn?'<strong>Status AI razgovora:</strong> ✅ aktivan (Gemini).':'<strong>Status AI razgovora:</strong> trenutno isključen.'}catch{box.innerHTML='<strong>Status AI razgovora:</strong> servis trenutno nije dostupan.'}}
+ try{const r=await fetch(AI_ENDPOINT+'/status');const d=await r.json();aiOn=!!d.enabled;if($('exNote'))$('exNote').textContent=aiOn?'Primjeri se šalju Dati.':'Primjeri čekaju aktivaciju pravog AI servisa.';box.innerHTML=aiOn?'<strong>Status AI razgovora:</strong> ✅ aktivan (Gemini).':'<strong>Status AI razgovora:</strong> trenutno isključen.'}catch{box.innerHTML='<strong>Status AI razgovora:</strong> servis trenutno nije dostupan.'}}
 checkAI();
 async function send(){const msg=$('question').value.trim();if(!msg||inFlight)return;bubble(msg,'me');$('question').value='';
  const fallback='Za to mi još nije uključen AI razgovor. Javite nam se putem WhatsAppa (091 518 1266) ili e-maila ekorustika@gmail.com, rado ćemo pomoći.';
@@ -48,3 +48,5 @@ $('inquiry').addEventListener('submit',e=>{e.preventDefault();const m=inquiryTex
 $('sendEmail').addEventListener('click',()=>{const m=inquiryText();if(!m)return;location.href='mailto:ekorustika@gmail.com?subject='+encodeURIComponent('Upit — EKORUSTIKA DIGITALNI ALATI')+'&body='+encodeURIComponent(m);$('formStatus').textContent='Otvara se e-mail aplikacija. Potvrdite slanje.'});
 let deferred=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('installBtn').style.display='inline-flex'});
 $('installBtn').addEventListener('click',async()=>{if(!deferred){alert('Chrome: izbornik ⋮ → „Instaliraj aplikaciju” ili „Dodaj na početni zaslon”.');return}deferred.prompt();await deferred.userChoice;deferred=null;$('installBtn').style.display='none'});
+window.dataAsk=function(q){$('question').value=q;if(AI_ENDPOINT&&aiOn){send();return}bubble('📝 Primjer je upisan u polje za pitanje. Pravi AI odgovori još čekaju aktivaciju, pa Data zasad ne odgovara na ovakva pitanja. Za pomoć nam se javite na WhatsApp 091 518 1266.','system')};
+document.querySelectorAll('.installAny').forEach(b=>b.addEventListener('click',()=>$('installBtn').click()));
