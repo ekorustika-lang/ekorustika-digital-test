@@ -1,0 +1,101 @@
+<!doctype html><html lang="hr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex">
+<title>DataVision recepcija · EKORUSTIKA GROUP</title><meta name="theme-color" content="#050B16">
+<style>
+:root{--bg:#050B16;--holo:#46E5FF;--green:#39FF14;--tx:#F5FAFF;--mut:#9fb3c8}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(ellipse at 50% 18%,#0a1830 0,var(--bg) 60%);color:var(--tx);font-family:system-ui,Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 30px;text-align:center}
+.ver{position:fixed;top:6px;right:8px;font-size:11px;color:var(--mut)}
+.demo{display:inline-block;font-size:11px;letter-spacing:.12em;border:1px solid #ffb02e;color:#ffb02e;border-radius:20px;padding:3px 10px}
+h1{margin:8px 0 0;font-size:clamp(26px,7vw,40px);letter-spacing:.18em;color:var(--holo);text-shadow:0 0 18px rgba(70,229,255,.45)}
+.sub{margin:4px 0 0;font-size:12px;letter-spacing:.3em;color:var(--mut)}
+.robotBtn{background:none;border:0;padding:0;margin:10px auto 0;display:block;cursor:pointer}
+.hfield{--amp:0;position:relative;width:min(340px,78vw);aspect-ratio:1;margin:0 auto;contain:layout paint;animation:float 6s ease-in-out infinite}
+.hfield>*{position:absolute;pointer-events:none}.hfield.speaking .hcv{animation-duration:2s}
+.hcv{left:12%;top:12%;width:76%;height:76%;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 46% 52% at 50% 46%,#000 38%,rgba(0,0,0,.55) 62%,rgba(0,0,0,.15) 82%,transparent 100%);mask-image:radial-gradient(ellipse 46% 52% at 50% 46%,#000 38%,rgba(0,0,0,.55) 62%,rgba(0,0,0,.15) 82%,transparent 100%);animation:hbr 4s ease-in-out infinite}
+.hp{width:2px;height:2px;border-radius:50%;background:#46E5FF;box-shadow:0 0 5px #46E5FF;left:var(--x);top:var(--y);animation:hsp var(--d) ease-in-out infinite;animation-delay:var(--dl);opacity:0}.hp:nth-of-type(3n){background:#39FF14;box-shadow:0 0 5px #39FF14}
+.hstatic{object-fit:cover}
+@keyframes hbr{0%,100%{opacity:.9;filter:drop-shadow(0 0 6px rgba(8,125,250,.35)) brightness(.96)}50%{opacity:1;filter:drop-shadow(0 0 14px rgba(70,229,255,.5)) brightness(1.06)}}
+@keyframes hsp{0%,100%{opacity:0;transform:translateY(0)}45%{opacity:calc(.55 + .35*var(--amp))}100%{transform:translateY(-14px)}}
+@keyframes float{50%{transform:translateY(-9px)}}
+@media (max-width:420px){.hfield{width:min(270px,72vw)}}
+@media (prefers-reduced-motion:reduce){.hfield,.hfield *{animation:none!important}}
+.status{font-size:13px;color:var(--holo);margin:2px 0 10px}.status b{color:var(--green)}
+.start{font-size:17px;font-weight:700;padding:13px 26px;border-radius:30px;border:1px solid var(--holo);background:linear-gradient(90deg,#087DFA,#0bb5d8);color:#fff;box-shadow:0 0 18px rgba(8,125,250,.5);cursor:pointer}
+.cards{display:grid;gap:12px;margin-top:20px;text-align:left}@media(min-width:700px){.cards{grid-template-columns:1fr 1fr}}
+.card{border:1px solid rgba(70,229,255,.25);border-radius:16px;padding:14px;background:rgba(8,125,250,.06)}
+.card.g{border-color:rgba(57,255,20,.3);background:rgba(57,255,20,.04)}
+.card h2{margin:0 0 8px;font-size:15px;letter-spacing:.08em;color:var(--holo)}.card.g h2{color:var(--green)}
+.card ul{margin:0 0 10px;padding-left:18px;color:#d8e6f3;font-size:14px;line-height:1.6}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.b{display:inline-block;text-decoration:none;font-size:13px;font-weight:600;padding:9px 13px;border-radius:20px;border:1px solid var(--holo);color:var(--tx);background:rgba(70,229,255,.08);cursor:pointer}
+.card.g .b{border-color:var(--green)}.b.wa{border-color:#25D366;background:rgba(37,211,102,.12)}
+.chat{grid-column:1/-1}
+#log{max-height:240px;overflow:auto;font-size:14px;margin:8px 0;display:flex;flex-direction:column;gap:6px}
+.m{padding:8px 11px;border-radius:12px;max-width:88%}.m.u{align-self:flex-end;background:#0f2a4d}.m.d{align-self:flex-start;background:rgba(70,229,255,.1);border:1px solid rgba(70,229,255,.2)}
+.m .tag{font-size:10px;color:#ffb02e;letter-spacing:.1em;display:block}
+form{display:flex;gap:8px}input{flex:1;min-width:0;padding:11px 13px;border-radius:20px;border:1px solid rgba(70,229,255,.35);background:#081428;color:var(--tx);font-size:15px}
+.mic{flex:none;width:46px;height:46px;border-radius:50%;border:1px solid var(--holo);background:#081428;color:#fff;font-size:19px;cursor:pointer}.mic.on{animation:pl 1.2s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(70,229,255,.7)}70%{box-shadow:0 0 0 14px rgba(70,229,255,0)}}
+.note{font-size:11px;color:var(--mut);margin-top:8px}
+.slogan{margin-top:24px;color:var(--holo);font-style:italic}.foot{font-size:11px;letter-spacing:.25em;color:var(--green);margin-top:6px}
+</style></head><body>
+<div class="ver">TEST recepcija r1</div>
+<div class="wrap">
+<div class="demo">DEMO NAČIN RADA · AI NIJE POVEZAN</div>
+<h1>DATAVISION</h1><p class="sub">EKORUSTIKA GROUP · VIRTUALNA RECEPCIJA</p>
+<button type="button" class="robotBtn" aria-label="DataVision hologram"></button>
+<div class="status">Status: <b id="st">Spreman</b></div>
+<button type="button" class="start" id="startBtn">▶ Pokreni DataVision</button>
+<div class="cards">
+<section class="card" id="montaze"><h2>EKORUSTIKA MONTAŽE</h2>
+<ul><li>SPC zidne obloge</li><li>MDF i akustični paneli</li><li>TV zidovi</li><li>WPC obloge</li><li>Galerija radova i upit za ponudu</li></ul>
+<div class="btns"><a class="b" href="https://ekorustika.com/#usluge">Usluge</a><a class="b" href="https://ekorustika.com/#radovi">Galerija radova</a><a class="b wa" href="https://wa.me/385915181266?text=Pozdrav!%20%C5%BDelim%20ponudu%20za%20monta%C5%BEu%20zidnih%20obloga.%20Poslat%20%C4%87u%20fotografiju%20zida%20i%20dimenzije.">Upit za ponudu</a></div></section>
+<section class="card g" id="digital"><h2>EKORUSTIKA DIGITALNI ALATI</h2>
+<ul><li>Izrada web stranica</li><li>Personalizirane dječje igre</li><li>AI asistenti za obrtnike i tvrtke</li><li>Digitalni alati i automatizacije</li></ul>
+<div class="btns"><a class="b" href="https://ekorustika-lang.github.io/ekorustika-digital-test/">Digitalni alati</a><a class="b" href="https://ekorustika-lang.github.io/Stjepanov-otok/">Primjer igre</a><a class="b wa" href="https://wa.me/385915181266?text=Pozdrav%2C%20zanima%20me%20izrada%20digitalnog%20rje%C5%A1enja.%20Molim%20vi%C5%A1e%20informacija.">Upit</a></div></section>
+<section class="card chat"><h2>RAZGOVARAJ S DATAVISIONOM</h2>
+<div id="log"></div>
+<form id="f"><button type="button" class="mic" id="mic" aria-label="Razgovaraj">🎤</button><input id="q" placeholder="Pitaj DataVision…" autocomplete="off"><button class="b" type="submit">Pošalji</button></form>
+<div class="note">Odgovori su unaprijed pripremljeni (demo). Pravi AI razgovor preko Cloudflare Workera uključit će se tek kad bude povezan i testiran.</div>
+<div class="btns" style="margin-top:10px"><a class="b wa" href="https://wa.me/385915181266">💬 WhatsApp 091 518 1266</a></div></section>
+</div>
+<div class="slogan">„Jedan Data. Svugdje s tobom.”</div><div class="foot">EKORUSTIKA GROUP</div>
+</div>
+<script src="dv-holo.js?v=r1"></script>
+<script>
+/* DATA OS – priprema za buduće povezivanje. Ništa nije aktivno dok je enabled=false. API ključevi NIKAD ovdje – samo kao Secret u Workeru. */
+window.DATA_OS={assistant:'DATA',face:'DataVision',site:'ekorustika-recepcija',
+ worker:{name:'Ekorustika-data-ai',url:'',enabled:false}, // AI razgovor: POST url {site,session,message} -> {reply}
+ voice:{remoteEnabled:false},  // budući glasovni odgovori preko Workera (npr. /tts), sada glas uređaja
+ memory:{core:'DATA CORE',enabled:false}}; // buduća zajednička memorija; isti asistent na više stranica (mijenja se samo site)
+(function(){
+const $=id=>document.getElementById(id),log=$('log'),st=$('st');
+const GREET='Dobro došli u EKORUSTIKA GROUP. Ja sam DataVision, vaš virtualni asistent. Mogu vam predstaviti naše montažne usluge, digitalne alate ili pomoći da pronađete ono što trebate. Kako vam mogu pomoći?';
+const WA='https://wa.me/385915181266',M='https://ekorustika.com/',D='https://ekorustika-lang.github.io/ekorustika-digital-test/';
+const A=[
+[/spc|mdf|akust|wpc|tv ?zid|oblog|panel|montaž|montaz|zid/i,'Za zidne obloge, akustične panele i TV zidove pogledajte EKORUSTIKA MONTAŽE. Za ponudu pošaljite fotografiju zida i mjere na WhatsApp.',[['EKORUSTIKA MONTAŽE',M+'#usluge'],['Upit na WhatsApp',WA]]],
+[/galerij|radov|slik|primjer/i,'Galeriju naših radova pogledajte na stranici EKORUSTIKA MONTAŽE.',[['Galerija radova',M+'#radovi']]],
+[/igr|djec|dijet|djet/i,'Izrađujemo personalizirane dječje igre s imenom djeteta. Isprobajte primjer Stjepanov otok.',[['Primjer igre','https://ekorustika-lang.github.io/Stjepanov-otok/'],['Digitalni alati',D]]],
+[/web|stranic|ai|asistent|digital|automat|aplikac/i,'Web stranice, AI asistente i digitalne alate za obrtnike i tvrtke predstavljamo na stranici EKORUSTIKA DIGITALNI ALATI.',[['Digitalni alati',D]]],
+[/cijen|košt|kost|ponud|kontakt|whatsapp|telefon|broj/i,'Cijene i ponude dogovaramo izravno. Javite se na WhatsApp 091 518 1266.',[['WhatsApp',WA]]]];
+const setS=s=>st.textContent=s;
+function add(t,who,links){const d=document.createElement('div');d.className='m '+who;if(who==='d'){const g=document.createElement('span');g.className='tag';g.textContent='DEMO ODGOVOR';d.appendChild(g);}
+ d.appendChild(document.createTextNode(t));if(links){const b=document.createElement('div');b.className='btns';b.style.marginTop='6px';links.forEach(([l,h])=>{const a=document.createElement('a');a.className='b';a.href=h;a.textContent=l;b.appendChild(a);});d.appendChild(b);}
+ log.appendChild(d);log.scrollTop=log.scrollHeight;}
+let voice=null;function pick(){const v=speechSynthesis.getVoices().filter(x=>/^hr/i.test(x.lang));voice=v.find(x=>/google/i.test(x.name))||v[0]||null;}
+if('speechSynthesis'in window){pick();speechSynthesis.onvoiceschanged=pick;}
+function say(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='hr-HR';if(voice)u.voice=voice;u.rate=.95;u.pitch=1;
+ u.onstart=()=>setS('Govorim');u.onend=u.onerror=()=>setS('Spreman');speechSynthesis.speak(u);}
+async function answer(q){add(q,'u');setS('Razmišljam');
+ const W=DATA_OS.worker;if(W.enabled&&W.url){/* buduće: pravi AI – uključuje se tek nakon testiranja */}
+ setTimeout(()=>{const h=A.find(x=>x[0].test(q));const r=h?h[1]:'Mogu vas uputiti na EKORUSTIKA MONTAŽE, EKORUSTIKA DIGITALNI ALATI ili WhatsApp kontakt. AI razgovor još nije povezan.';
+  add(r,'d',h?h[2]:[['Montaže',M],['Digitalni alati',D],['WhatsApp',WA]]);say(r);},500);}
+$('startBtn').onclick=()=>{add(GREET,'d');say(GREET);window.dvEmotion&&dvEmotion('greet',3);};
+$('f').onsubmit=e=>{e.preventDefault();const q=$('q').value.trim();if(q){$('q').value='';answer(q);}};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const mic=$('mic');
+mic.onclick=()=>{if(!SR){add('Ovaj preglednik ne podržava glasovni unos. Upišite pitanje u polje.','d');return;}
+ const r=new SR();r.lang='hr-HR';r.interimResults=false;mic.classList.add('on');setS('Slušam');
+ r.onresult=e=>{answer(e.results[0][0].transcript);};r.onerror=()=>setS('Spreman');r.onend=()=>{mic.classList.remove('on');if(st.textContent==='Slušam')setS('Spreman');};
+ try{speechSynthesis&&speechSynthesis.cancel();r.start();}catch(e){mic.classList.remove('on');setS('Spreman');}};
+})();
+</script></body></html>
