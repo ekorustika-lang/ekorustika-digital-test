@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ekorustika AI Asistent</title>
+<title>Ekorustika – prodaja i montaža obloga</title>
 <style>
   .start-screen{justify-content:flex-start !important;}
   :root {
@@ -91,6 +91,18 @@
   .edit:focus{outline:none;border-color:var(--accent)}
   .hint{color:var(--muted);font-size:13px;margin-top:8px;text-align:center}
   .wa-btn{background:#25D366}
+  .header{padding:14px 16px 10px}
+  .header h1{font-size:15px;letter-spacing:3px;color:#4fc3ff;text-shadow:0 0 8px rgba(79,195,255,.5)}
+  .header .offer{font-size:21px;font-weight:800;margin-top:4px}
+  .hdr-sub{font-size:13px;color:#ccc;margin-top:6px}
+  .start-screen{padding:14px 16px 20px}
+  .start-screen h2{font-size:22px;margin-bottom:10px;color:#fff}
+  .start-screen p{color:#d6d6d6;margin-bottom:18px;font-size:15px}
+  .tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:12px}
+  .tags span{border:1px solid #4fc3ff;color:#4fc3ff;border-radius:16px;padding:4px 11px;font-size:13px;font-weight:700}
+  .tags span:nth-child(odd){border-color:var(--accent);color:var(--accent)}
+  .asst-label{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:8px}
+  .btn-secondary{margin-top:10px}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
@@ -108,19 +120,21 @@
 </head>
 <body>
 <div class="header">
-  <h1>DATA · EKORUSTIKA GROUP</h1>
-  <div class="offer">Prodaja i montaža<br><span>SPC · MDF · WPC obloga</span></div>
-  <div class="slogan">AI pripremi. Majstor odlučuje.</div>
+  <h1>EKORUSTIKA GROUP</h1>
+  <div class="offer">Prodaja i montaža obloga<br><span>SPC · MDF · WPC obloge</span></div>
+  <div class="hdr-sub">Brzo pošaljite upit preko našeg asistenta.</div>
 </div>
 
 <div class="container">
   <div id="start" class="start-screen">
-    <img src="og-image.png?v=3" alt="Ekorustika – prodaja i montaža SPC, MDF i WPC obloga, uz Ekorustika AI asistenta" style="width:100%;border-radius:14px;border:1px solid #2a2a2a;box-shadow:0 0 18px rgba(0,255,157,.25);margin-bottom:22px">
-    <h2>Bok, ja sam DATA – digitalni djelatnik EKORUSTIKA GROUP.</h2>
-    <p>SPC zidne obloge, MDF i akustični paneli, WPC obloge te TV zidovi i dekorativne obloge.<br><strong style="color:#00ff9d">Zagreb i okolica.</strong><br><br>Postavit ću vam nekoliko kratkih pitanja i pripremiti upit za majstora.</p>
-    <button class="btn" onclick="startChat()">Započni razgovor</button>
+    <img src="og-image.png?v=3" alt="Ekorustika – prodaja i montaža SPC, MDF i WPC obloga, uz Ekorustika AI asistenta" style="width:100%;border-radius:14px;border:1px solid #2a2a2a;box-shadow:0 0 18px rgba(0,255,157,.25);margin-bottom:14px">
+    <h2>Trebate zidne obloge ili TV zid?</h2>
+    <div class="tags"><span>SPC</span><span>MDF</span><span>WPC</span><span>TV zidovi</span></div>
+    <p>SPC zidne obloge, MDF i akustični paneli, WPC obloge te dekorativne obloge i TV zidovi.<br><strong style="color:#00ff9d">Zagreb i okolica.</strong><br>Pošaljite upit preko našeg asistenta i pripremit ćemo poruku za majstora.</p>
+    <button class="btn" onclick="startChat()">POŠALJITE UPIT</button>
+    <div class="asst-label">💬 EKORUSTIKA ASISTENT</div>
     <a class="btn btn-secondary" href="https://ekorustika.com" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box">🛠️ Pogledaj naše radove – ekorustika.com</a>
-    <div style="margin-top:22px;padding:16px;border:1px solid #00ff9d55;border-radius:14px;background:#0d0d0d;text-align:center">
+    <div style="margin-top:16px;padding:14px;border:1px solid #00ff9d55;border-radius:14px;background:#0d0d0d;text-align:center">
       <div style="font-size:12px;letter-spacing:2px;color:#00ff9d;text-transform:uppercase;font-weight:700;margin-bottom:12px">Naš partner za zidne obloge</div>
       <a href="https://obloga.hr" target="_blank" rel="noopener" style="display:inline-block;background:#fff;border-radius:12px;padding:8px 14px"><img src="obloga-logo.png" alt="obloga.hr logo" style="height:64px;width:auto;display:block"></a>
       <a href="https://obloga.hr" target="_blank" rel="noopener" style="display:block;margin-top:10px;color:#fff;font-weight:700;font-size:17px;text-decoration:none">obloga.hr</a>
@@ -136,7 +150,7 @@
       <input type="text" id="userInput" placeholder="Vaš odgovor..." autocomplete="off">
       <button class="send-btn" onclick="sendMessage()">➤</button>
     </div>
-    <div class="mode-note">ℹ️ DATA trenutačno radi po unaprijed napisanim pravilima – AI model još nije spojen.</div>
+    <div class="mode-note">ℹ️ EKORUSTIKA ASISTENT trenutačno radi po unaprijed napisanim pravilima – AI model još nije spojen.</div>
   </div>
 
   <div id="summary" class="summary-screen hidden">
@@ -196,13 +210,13 @@ const state={messages:[],data:{},lastQuestion:null,potvrda:0};
 function startChat(){
   document.getElementById("start").classList.add("hidden");
   document.getElementById("chat").classList.remove("hidden");
-  ai("Bok, ja sam DATA, digitalni djelatnik EKORUSTIKA GROUP. Radimo SPC, MDF, akustične i WPC obloge te TV zidove u Zagrebu i okolici. Napišite što planirate, a ja ću pitati samo ono što majstoru treba.");
+  ai("Bok, ovdje EKORUSTIKA ASISTENT. Radimo SPC, MDF, akustične i WPC obloge te TV zidove u Zagrebu i okolici. Napišite što planirate, a ja ću pitati samo ono što majstoru treba.");
   state.lastQuestion="vrsta"; prikaziBrze("vrsta");
   document.getElementById("userInput").focus();
 }
 function ai(t){addMessage("ai",t);state.messages.push({role:"assistant",content:t});}
 function addMessage(role,text){const d=document.createElement("div");d.className="msg "+role;d.textContent=text;const m=document.getElementById("messages");m.appendChild(d);m.scrollTop=m.scrollHeight;}
-function showTyping(){const e=document.createElement("div");e.className="typing";e.id="typing";e.textContent="DATA piše...";const m=document.getElementById("messages");m.appendChild(e);m.scrollTop=m.scrollHeight;}
+function showTyping(){const e=document.createElement("div");e.className="typing";e.id="typing";e.textContent="Asistent piše...";const m=document.getElementById("messages");m.appendChild(e);m.scrollTop=m.scrollHeight;}
 function hideTyping(){const e=document.getElementById("typing");if(e)e.remove();}
 function prikaziBrze(p){const b=document.getElementById("quick");b.innerHTML="";(BRZI[p]||[]).forEach(o=>{const c=document.createElement("button");c.className="chip";c.textContent=o;c.onclick=()=>{document.getElementById("userInput").value=o;sendMessage();};b.appendChild(c);});}
 function sendMessage(){
