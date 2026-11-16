@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ekorustika AI Asistent</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #161616;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #a0a0a0;
+    --accent: #00ff9d;
+    --accent-dark: #00cc7a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    padding: 20px 16px 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+  .header .offer {
+    font-size: 14px;
+    color: var(--text);
+    margin-top: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    line-height: 1.4;
+  }
+  .header .offer span {
+    color: var(--accent);
+  }
+  .container { flex: 1; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; width: 100%; }
+  .start-screen, .summary-screen {
+    flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 20px; text-align: center;
+  }
+  .start-screen h2, .summary-screen h2 { font-size: 20px; margin-bottom: 16px; line-height: 1.4; }
+  .start-screen p { color: var(--muted); margin-bottom: 32px; font-size: 16px; line-height: 1.5; }
+  .btn {
+    background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 18px 24px;
+    font-size: 18px; font-weight: 700; cursor: pointer; width: 100%; max-width: 320px; margin: 0 auto; display: block;
+    transition: background 0.2s;
+  }
+  .btn:active { background: var(--accent-dark); }
+  .btn-secondary { background: transparent; color: var(--accent); border: 2px solid var(--accent); margin-top: 12px; }
+  .chat-screen { flex: 1; display: flex; flex-direction: column; padding: 12px 16px 16px; }
+  .messages { flex: 1; overflow-y: auto; padding-bottom: 12px; }
+  .msg {
+    margin-bottom: 14px; max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.45; font-size: 16px;
+  }
+  .msg.ai { background: var(--card); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg.user { background: #003322; border: 1px solid var(--accent); align-self: flex-end; margin-left: auto; border-bottom-right-radius: 4px; }
+  .input-area { display: flex; gap: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .input-area input {
+    flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; color: var(--text); font-size: 16px;
+  }
+  .input-area input:focus { outline: none; border-color: var(--accent); }
+  .send-btn {
+    background: var(--accent); color: #000; border: none; border-radius: 12px; width: 52px;
+    font-size: 20px; font-weight: bold; cursor: pointer;
+  }
+  .summary-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin: 20px 0; text-align: left;
+  }
+  .summary-box h3 { color: var(--accent); font-size: 18px; margin-bottom: 16px; text-align: center; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 2px; }
+  .field .value { font-size: 16px; font-weight: 500; }
+  .ai-summary { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 15px; line-height: 1.5; color: var(--muted); }
+  .ai-summary strong { color: var(--accent); }
+  .status { display: inline-block; background: var(--accent); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-top: 8px; }
+  .thank-you { margin-top: 24px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .hidden { display: none !important; }
+  .typing { color: var(--muted); font-style: italic; font-size: 14px; padding: 8px 0; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>EKORUSTIKA AI ASISTENT</h1>
+  <div class="offer">Prodaja i montaža<br><span>SPC · MDF · WPC obloga</span></div>
+  <div class="slogan">AI pripremi. Majstor odlučuje.</div>
+</div>
+
+<div class="container">
+  <div id="start" class="start-screen">
+    <h2>Bok, ja sam Ekorustika AI asistent.</h2>
+    <p>Specijalizirani smo za <strong style="color:#00ff9d">prodaju i montažu SPC, MDF i WPC obloga</strong>.<br><br>Opišite što trebate.<br>Ja ću voditi razgovor i pripremiti kompletan upit za majstora.</p>
+    <button class="btn" onclick="startChat()">Započni razgovor</button>
+  </div>
+
+  <div id="chat" class="chat-screen hidden">
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Vaš odgovor..." autocomplete="off">
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <div id="summary" class="summary-screen hidden">
+    <h2>NOVI UPIT</h2>
+    <div class="summary-box">
+      <div class="field"><label>Usluga</label><div class="value" id="s-usluga">—</div></div>
+      <div class="field"><label>Lokacija</label><div class="value" id="s-lokacija">—</div></div>
+      <div class="field"><label>Željeni termin</label><div class="value" id="s-termin">—</div></div>
+      <div class="field"><label>Materijal/oprema</label><div class="value" id="s-materijal">—</div></div>
+      <div class="field"><label>Fotografije/nacrt</label><div class="value" id="s-foto">—</div></div>
+      <div class="field"><label>Ime</label><div class="value" id="s-ime">—</div></div>
+      <div class="field"><label>Kontakt</label><div class="value" id="s-kontakt">—</div></div>
+      <div class="field"><label>Napomena</label><div class="value" id="s-napomena">—</div></div>
+      <div style="text-align:center; margin-top:16px;">
+        <span class="status">Status: NOVI UPIT</span>
+      </div>
+      <div class="ai-summary" id="ai-summary"></div>
+    </div>
+    <p id="send-status" class="thank-you"></p>
+    <p class="thank-you">Hvala. Vaš upit je pripremljen.<br>Ekorustika će ga pregledati i javiti vam se.</p>
+    <button class="btn btn-secondary" onclick="location.reload()">Novi upit</button>
+  </div>
+</div>
+
+<script>
+const state = {
+  messages: [],
+  data: {
+    opis: "", usluga: "", lokacija: "", materijal: "", foto: "", termin: "", napomena: "", ime: "", kontakt: ""
+  },
+  lastQuestion: null   // koji je ključ zadnje postavljenog pitanja
+};
+
+function startChat() {
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("chat").classList.remove("hidden");
+  const greeting = "Bok! Opišite ukratko što trebate — montaža SPC, MDF, WPC obloga ili nešto drugo. Ja ću pitati samo ono što je bitno.";
+  addMessage("ai", greeting);
+  state.messages.push({ role: "assistant", content: greeting });
+  state.lastQuestion = "opis";
+  document.getElementById("userInput").focus();
+}
+
+function addMessage(role, text) {
+  const div = document.createElement("div");
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  document.getElementById("messages").appendChild(div);
+  const msgs = document.getElementById("messages");
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const el = document.createElement("div");
+  el.className = "typing";
+  el.id = "typing";
+  el.textContent = "Asistent razmišlja...";
+  document.getElementById("messages").appendChild(el);
+  document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+}
+
+function hideTyping() {
+  const el = document.getElementById("typing");
+  if (el) el.remove();
+}
+
+function sendMessage() {
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage("user", text);
+  state.messages.push({ role: "user", content: text });
+  input.value = "";
+
+  // Prvi odgovor ide u opis
+  if (!state.data.opis) state.data.opis = text;
+
+  showTyping();
+
+  setTimeout(() => {
+    hideTyping();
+    const next = decideNextStep(text);
+    if (next.done) {
+      showSummary();
+    } else {
+      addMessage("ai", next.question);
+      state.messages.push({ role: "assistant", content: next.question });
+    }
+  }, 700);
+}
+
+function decideNextStep(lastAnswer) {
+  const t = lastAnswer.toLowerCase();
+
+  // Spremi odgovor u polje na koje je asistent upravo pitao
+  if (state.lastQuestion && lastAnswer) {
+    state.data[state.lastQuestion] = lastAnswer;
+    if (state.lastQuestion === "kontakt") {
+      state.data.ime = extractName(lastAnswer);
+    }
+  }
+
+  // Pametno prepoznavanje iz prvog opisa
+  if (state.lastQuestion === "opis" || !state.data.usluga) {
+    if (t.includes("spc")) state.data.usluga = "montaža SPC obloga";
+    else if (t.includes("mdf")) state.data.usluga = "montaža MDF obloga";
+    else if (t.includes("wpc")) state.data.usluga = "montaža WPC obloga";
+    else if (t.includes("oblog")) state.data.usluga = "montaža obloga";
+    else if (t.includes("demontaž")) state.data.usluga = "demontaža";
+    else if (t.includes("montaž") || t.includes("montaz")) state.data.usluga = lastAnswer;
+  }
+
+  // Odredi sljedeće pitanje (preskače ako je već poznato)
+  if (!state.data.usluga) {
+    state.lastQuestion = "usluga";
+    return { done: false, question: "Koju točno uslugu trebate? (SPC, MDF, WPC obloge, demontaža ili nešto drugo?)" };
+  }
+  if (!state.data.lokacija) {
+    state.lastQuestion = "lokacija";
+    return { done: false, question: "Gdje se posao nalazi? Grad, dio grada ili točnija adresa." };
+  }
+  if (!state.data.materijal) {
+    state.lastQuestion = "materijal";
+    return { done: false, question: "Je li materijal već dostavljen i spreman za montažu?" };
+  }
+  if (!state.data.foto) {
+    state.lastQuestion = "foto";
+    return { done: false, question: "Imate li fotografije ili nacrt prostora?" };
+  }
+  if (!state.data.termin) {
+    state.lastQuestion = "termin";
+    return { done: false, question: "Kada biste željeli izvođenje radova?" };
+  }
+  if (!state.data.napomena) {
+    state.lastQuestion = "napomena";
+    return { done: false, question: "Ima li nešto dodatno što bi majstor trebao znati? (možete napisati „nema“)" };
+  }
+  if (!state.data.kontakt) {
+    state.lastQuestion = "kontakt";
+    return { done: false, question: "Kako se zovete i na koji broj ili email da vas možemo kontaktirati?" };
+  }
+
+  return { done: true };
+}
+
+function extractFromText(text) {
+  const t = text.toLowerCase();
+
+  // Usluga
+  if (!state.data.usluga) {
+    if (t.includes("kuhinj")) state.data.usluga = "montaža kuhinje";
+    else if (t.includes("demontaž")) state.data.usluga = "demontaža";
+    else if (t.includes("lamel")) state.data.usluga = "postavljanje lamela";
+    else if (t.includes("namještaj") || t.includes("namjestaj")) state.data.usluga = "montaža namještaja";
+    else if (t.includes("montaž") || t.includes("montaz")) state.data.usluga = text;
+  }
+
+  // Lokacija
+  if (!state.data.lokacija && (t.includes("zagreb") || t.includes("samobor") || t.includes("split") || t.includes("rijeka") || t.includes("u ") || t.match(/\d{5}/))) {
+    state.data.lokacija = text;
+  }
+
+  // Materijal
+  if (!state.data.materijal && (t.includes("da") || t.includes("spreman") || t.includes("dostavljen") || t.includes("imam") || t.includes("nema") || t.includes("ne"))) {
+    state.data.materijal = text;
+  }
+
+  // Foto
+  if (!state.data.foto && (t.includes("da") || t.includes("imam") || t.includes("fotograf") || t.includes("nacrt") || t.includes("skic") || t.includes("nemam") || t.includes("ne"))) {
+    state.data.foto = text;
+  }
+
+  // Termin
+  if (!state.data.termin && (t.includes("sutra") || t.includes("tjedan") || t.includes("sljedeći") || t.includes("vikend") || t.match(/\d{1,2}\./))) {
+    state.data.termin = text;
+  }
+
+  // Kontakt (ime + telefon/email)
+  if (!state.data.kontakt && (t.includes("@") || t.match(/\d{6,}/) || t.includes("zovem") || t.includes("ja sam"))) {
+    state.data.kontakt = text;
+    state.data.ime = extractName(text);
+  }
+}
+
+function extractAll(last) {
+  extractFromText(last);
+  if (!state.data.usluga && state.data.opis) state.data.usluga = state.data.opis;
+}
+
+function extractName(kontakt) {
+  if (!kontakt) return "—";
+  // Ukloni telefon i email
+  let name = kontakt.replace(/[0-9+\-\s]{8,}/g, "").replace(/[\w.-]+@[\w.-]+/g, "").replace(/[,;]/g, " ").trim();
+  const parts = name.split(/\s+/).filter(p => p.length > 1);
+  return parts.slice(0, 3).join(" ") || "—";
+}
+
+function showSummary() {
+  document.getElementById("chat").classList.add("hidden");
+  document.getElementById("summary").classList.remove("hidden");
+
+  document.getElementById("s-usluga").textContent = state.data.usluga || state.data.opis || "—";
+  document.getElementById("s-lokacija").textContent = state.data.lokacija || "—";
+  document.getElementById("s-termin").textContent = state.data.termin || "—";
+  document.getElementById("s-materijal").textContent = state.data.materijal || "—";
+  document.getElementById("s-foto").textContent = state.data.foto || "—";
+  document.getElementById("s-ime").textContent = state.data.ime || extractName(state.data.kontakt);
+  document.getElementById("s-kontakt").textContent = state.data.kontakt || "—";
+  document.getElementById("s-napomena").textContent = state.data.napomena || "—";
+
+  const summaryText = generateAISummary(state.data);
+  document.getElementById("ai-summary").innerHTML = `<strong>AI sažetak za majstora:</strong><br>${summaryText}`;
+
+  // Pošalji upit na email
+  sendEmail(summaryText);
+}
+
+function sendEmail(summaryText) {
+  const payload = {
+    _subject: "NOVI UPIT - Ekorustika AI Asistent",
+    usluga: state.data.usluga || state.data.opis || "—",
+    lokacija: state.data.lokacija || "—",
+    termin: state.data.termin || "—",
+    materijal: state.data.materijal || "—",
+    fotografije: state.data.foto || "—",
+    ime: state.data.ime || "—",
+    kontakt: state.data.kontakt || "—",
+    napomena: state.data.napomena || "—",
+    ai_sazetak: summaryText
+  };
+
+  payload._template = "table";
+  payload._captcha = "false";
+  const st = document.getElementById("send-status");
+  st.textContent = "Šaljem upit...";
+  fetch("https://formsubmit.co/ajax/ekorustika@gmail.com", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json().then(j => ({ ok: r.ok, j })))
+  .then(({ ok, j }) => {
+    if (ok && String(j.success) === "true") {
+      st.textContent = "✅ Upit je poslan Ekorustici.";
+    } else { throw new Error(); }
+  })
+  .catch(() => {
+    const body = Object.entries(payload).filter(([k]) => !k.startsWith("_")).map(([k,v]) => k + ": " + v).join("\n");
+    st.innerHTML = "⚠️ Automatsko slanje nije uspjelo. <a style='color:#00ff9d' href='mailto:ekorustika@gmail.com?subject=" + encodeURIComponent(payload._subject) + "&body=" + encodeURIComponent(body) + "'>Pošalji upit e-mailom</a>";
+  });
+}
+
+function generateAISummary(d) {
+  const usluga = d.usluga || d.opis || "usluga";
+  const lok = d.lokacija || "nedefinirana lokacija";
+  const mat = (d.materijal || "").toLowerCase().includes("da") || (d.materijal || "").toLowerCase().includes("spreman")
+    ? "Materijal je spreman."
+    : "Materijal još nije potvrđen.";
+  const foto = (d.foto || "").toLowerCase().includes("da") || (d.foto || "").toLowerCase().includes("imam")
+    ? "Klijent ima fotografije/nacrt."
+    : "Fotografije/nacrt nisu priloženi.";
+  const term = d.termin || "termin nije naveden";
+  const note = d.napomena && !d.napomena.toLowerCase().includes("nema") ? ` Napomena: ${d.napomena}` : "";
+
+  return `Klijent treba ${usluga.toLowerCase()} na lokaciji ${lok}. ${mat} ${foto} Željeni termin: ${term}.${note} Upit je spreman za pregled.`;
+}
+
+// Enter to send
+document.getElementById("userInput").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") sendMessage();
+});
+</script>
+</body>
+</html>
