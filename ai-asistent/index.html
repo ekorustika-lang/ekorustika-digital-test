@@ -154,23 +154,24 @@
    NAČIN RADA: unaprijed napisana pravila (AI model NIJE spojen).
    Za pravi AI razgovor: Cloudflare Worker s AI modelom, adresa u DATA_CORE.workerUrl, enabled:true.
    Worker prima {poruke, podaci, sljedecePolje}, vraća {odgovor, podaci}. */
-const DATA_CORE = { workerUrl: "", enabled: false, verzija: "8.0" };
+const DATA_CORE = { workerUrl: "", enabled: false, verzija: "8.1" };
 const WA_BROJ = "385915181266";
 const VRSTE = {
-  tv:{naziv:"TV zid / dekorativna obloga",polja:["tv","dimenzije","rasvjeta"]},
+  tv:{naziv:"TV zid / dekorativna obloga",polja:["dimenzije","foto","izgled","rasvjeta"]},
   spc:{naziv:"SPC zidne obloge",polja:["povrsina","podloga"]},
   mdf:{naziv:"MDF / akustični paneli",polja:["namjena","povrsina"]},
   wpc:{naziv:"WPC obloge",polja:["prostor","povrsina"]},
   ostalo:{naziv:"Ostalo",polja:["opis","dimenzije"]}
 };
 const ZAJEDNICKA=["lokacija","foto","termin","ime","kontakt"];
-const OZNAKE={vrsta:"Vrsta montaže",opis:"Opis posla",tv:"Televizor",dimenzije:"Dimenzije",rasvjeta:"Rasvjeta",povrsina:"Površina",podloga:"Podloga / zid",namjena:"Namjena",prostor:"Unutra / vani",lokacija:"Lokacija",foto:"Fotografija",termin:"Željeni termin",ime:"Ime",kontakt:"Kontakt",napomena:"Napomena"};
+const OZNAKE={vrsta:"Vrsta montaže",opis:"Opis posla",tv:"Televizor",dimenzije:"Dimenzije",rasvjeta:"Rasvjeta",izgled:"Željeni izgled / materijal",povrsina:"Površina",podloga:"Podloga / zid",namjena:"Namjena",prostor:"Unutra / vani",lokacija:"Lokacija",foto:"Fotografija",termin:"Željeni termin",ime:"Ime",kontakt:"Kontakt",napomena:"Napomena"};
 const PITANJA={
   vrsta:"Što planirate – TV zid, SPC obloge, MDF ili akustične panele, WPC obloge ili nešto drugo?",
   opis:"Opišite ukratko posao koji trebate.",
   tv:"Koliki je televizor (u inčima) i hoće li visjeti na zidu?",
-  dimenzije:"Koje su približne dimenzije zida – širina i visina?",
-  rasvjeta:"Želite li LED rasvjetu u zidu ili iza televizora?",
+  dimenzije:"Koja je približna širina i visina zida u centimetrima? Ako ne znate točno, nema problema – može se dogovoriti izmjera.",
+  izgled:"Kakav izgled želite – SPC, MDF, akustični paneli, kombinacija materijala ili vam treba naš prijedlog?",
+  rasvjeta:"Želite li i LED rasvjetu na zidu?",
   povrsina:"Kolika je približna površina u m² (ili širina × visina zida)?",
   podloga:"Kakva je podloga – ravan žbukani zid, knauf, pločice ili stara obloga?",
   namjena:"Je li vam važan samo izgled ili i akustika (boravak, ured, studio)?",
@@ -182,7 +183,7 @@ const PITANJA={
   kontakt:"Na koji broj mobitela ili e-mail vas majstor može kontaktirati?"
 };
 const POTVRDE=["U redu.","Zabilježio sam.","Super, hvala.","Jasno.","Odlično.","Razumijem."];
-const BRZI={vrsta:["TV zid","SPC obloge","MDF / akustični paneli","WPC obloge","Nešto drugo"],rasvjeta:["Da, LED","Ne treba"],foto:["Da, imam","Nemam"],prostor:["Unutra","Vani"],namjena:["Samo izgled","I akustika"],termin:["Što prije","Za 2–4 tjedna","Nije hitno"]};
+const BRZI={vrsta:["TV zid","SPC obloge","MDF / akustični paneli","WPC obloge","Nešto drugo"],rasvjeta:["Da, LED","Ne treba","Nisam siguran"],izgled:["SPC","MDF","Akustični paneli","Kombinacija","Trebam prijedlog"],dimenzije:["Ne znam – dogovor izmjere"],foto:["Da, imam","Nemam"],prostor:["Unutra","Vani"],namjena:["Samo izgled","I akustika"],termin:["Što prije","Za 2–4 tjedna","Nije hitno"]};
 const state={messages:[],data:{},lastQuestion:null,potvrda:0};
 
 function startChat(){
@@ -247,12 +248,15 @@ function pravila(text){
   let uvod=POTVRDE[state.potvrda++%POTVRDE.length]+" ";
   if(q==="vrsta")uvod={tv:"TV zid, odlično. ",spc:"SPC obloge, može. ",mdf:"MDF i akustični paneli, može. ",wpc:"WPC obloge, može. ",ostalo:"U redu. "}[d.vrsta];
   if(q==="lokacija"&&!MJESTA.test(t))uvod="Zabilježio sam. Radimo uglavnom u Zagrebu i okolici, a za dalje lokacije majstor potvrđuje može li doći. ";
+  if(q==="dimenzije"&&/ne znam|nisam siguran|izmjer|ne zna/.test(t)){d.dimenzije="Ne zna – dogovor izmjere";uvod="Nema problema, majstor može doći na izmjeru i savjetovanje. ";}
+  if(q==="izgled"&&/ne znam|prijedlog|savjet|nisam siguran/.test(t)){d.izgled="Treba prijedlog / savjetovanje";uvod="Može, majstor će vam predložiti rješenje prema prostoru. ";}
   if(q==="foto")uvod=/^ne|nemam/.test(t)?"Nema problema, može i bez nje. ":"Super, pošaljite je u WhatsApp poruci. ";
   const n=sljedece();
   return n.done?n:{done:false,question:uvod+n.question};
 }
 function sljedece(){
   const d=state.data;
+  PITANJA.foto=d.vrsta==="tv"?"Možete li poslati fotografiju postojećeg zida? Priložit ćete je u WhatsApp poruci na kraju.":"Imate li fotografiju prostora? Poslat ćete je u WhatsApp poruci na kraju.";
   const red=["vrsta"].concat(d.vrsta?VRSTE[d.vrsta].polja:[],ZAJEDNICKA);
   for(const p of red){if(!d[p]){state.lastQuestion=p;return{done:false,question:PITANJA[p]};}}
   state.lastQuestion=null;return{done:true};
