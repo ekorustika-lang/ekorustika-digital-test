@@ -2,7 +2,7 @@
 <html lang="hr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ekorustika AI Asistent</title>
 <style>
   .start-screen{justify-content:flex-start !important;}
@@ -84,6 +84,13 @@
   .thank-you { margin-top: 24px; color: var(--muted); font-size: 15px; line-height: 1.5; }
   .hidden { display: none !important; }
   .typing { color: var(--muted); font-style: italic; font-size: 14px; padding: 8px 0; }
+  .quick{display:flex;flex-wrap:wrap;gap:8px;padding:6px 0}
+  .chip{background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:20px;padding:8px 14px;font-size:14px;cursor:pointer}
+  .mode-note{color:var(--muted);font-size:12px;text-align:center;padding-top:8px}
+  .edit{width:100%;background:#0d0d0d;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:16px}
+  .edit:focus{outline:none;border-color:var(--accent)}
+  .hint{color:var(--muted);font-size:13px;margin-top:8px;text-align:center}
+  .wa-btn{background:#25D366}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
@@ -101,7 +108,7 @@
 </head>
 <body>
 <div class="header">
-  <h1>EKORUSTIKA AI ASISTENT</h1>
+  <h1>DATA · EKORUSTIKA GROUP</h1>
   <div class="offer">Prodaja i montaža<br><span>SPC · MDF · WPC obloga</span></div>
   <div class="slogan">AI pripremi. Majstor odlučuje.</div>
 </div>
@@ -109,292 +116,183 @@
 <div class="container">
   <div id="start" class="start-screen">
     <img src="og-image.png?v=3" alt="Ekorustika – prodaja i montaža SPC, MDF i WPC obloga, uz Ekorustika AI asistenta" style="width:100%;border-radius:14px;border:1px solid #2a2a2a;box-shadow:0 0 18px rgba(0,255,157,.25);margin-bottom:22px">
-    <h2>Bok, ja sam Ekorustika AI asistent.</h2>
-    <p>Specijalizirani smo za <strong style="color:#00ff9d">prodaju i montažu SPC, MDF i WPC obloga</strong>.<br><br>Opišite što trebate.<br>Ja ću voditi razgovor i pripremiti kompletan upit za majstora.</p>
+    <h2>Bok, ja sam DATA – digitalni djelatnik EKORUSTIKA GROUP.</h2>
+    <p>SPC zidne obloge, MDF i akustični paneli, WPC obloge te TV zidovi i dekorativne obloge.<br><strong style="color:#00ff9d">Zagreb i okolica.</strong><br><br>Postavit ću vam nekoliko kratkih pitanja i pripremiti upit za majstora.</p>
     <button class="btn" onclick="startChat()">Započni razgovor</button>
     <a class="btn btn-secondary" href="https://ekorustika.com" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box">🛠️ Pogledaj naše radove – ekorustika.com</a>
   </div>
 
   <div id="chat" class="chat-screen hidden">
     <div class="messages" id="messages"></div>
+    <div id="quick" class="quick"></div>
     <div class="input-area">
       <input type="text" id="userInput" placeholder="Vaš odgovor..." autocomplete="off">
       <button class="send-btn" onclick="sendMessage()">➤</button>
     </div>
+    <div class="mode-note">ℹ️ DATA trenutačno radi po unaprijed napisanim pravilima – AI model još nije spojen.</div>
   </div>
 
   <div id="summary" class="summary-screen hidden">
-    <h2>NOVI UPIT</h2>
+    <h2>Provjerite svoj upit</h2>
     <div class="summary-box">
-      <div class="field"><label>Usluga</label><div class="value" id="s-usluga">—</div></div>
-      <div class="field"><label>Lokacija</label><div class="value" id="s-lokacija">—</div></div>
-      <div class="field"><label>Željeni termin</label><div class="value" id="s-termin">—</div></div>
-      <div class="field"><label>Materijal/oprema</label><div class="value" id="s-materijal">—</div></div>
-      <div class="field"><label>Fotografije/nacrt</label><div class="value" id="s-foto">—</div></div>
-      <div class="field"><label>Ime</label><div class="value" id="s-ime">—</div></div>
-      <div class="field"><label>Kontakt</label><div class="value" id="s-kontakt">—</div></div>
-      <div class="field"><label>Napomena</label><div class="value" id="s-napomena">—</div></div>
-      <div style="text-align:center; margin-top:16px;">
-        <span class="status">Status: NOVI UPIT</span>
-      </div>
-      <div class="ai-summary" id="ai-summary"></div>
+      <h3>NOVI UPIT</h3>
+      <div id="s-polja"></div>
+      <p class="hint">Možete ispraviti bilo koje polje prije slanja.</p>
     </div>
+    <button class="btn wa-btn" onclick="posaljiWhatsApp()">💬 Pošalji putem WhatsAppa</button>
+    <button class="btn btn-secondary" onclick="sendEmail()">✉️ Pošalji e-mailom</button>
     <p id="send-status" class="thank-you"></p>
-    <p class="thank-you">Hvala. Vaš upit je pripremljen.<br>Ekorustika će ga pregledati i javiti vam se.</p>
+    <p class="thank-you">Cijenu, rok i termin potvrđuje majstor nakon pregleda upita.</p>
     <button class="btn btn-secondary" onclick="location.reload()">Novi upit</button>
     <a class="btn btn-secondary" href="https://ekorustika.com" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box">🛠️ Pogledaj naše radove – ekorustika.com</a>
   </div>
 </div>
+</div>
 
 <script>
-const state = {
-  messages: [],
-  data: {
-    opis: "", usluga: "", lokacija: "", materijal: "", foto: "", termin: "", napomena: "", ime: "", kontakt: ""
-  },
-  lastQuestion: null   // koji je ključ zadnje postavljenog pitanja
+/* EKORUSTIKA AI ASISTENT V8 – DATA · EKORUSTIKA GROUP
+   NAČIN RADA: unaprijed napisana pravila (AI model NIJE spojen).
+   Za pravi AI razgovor: Cloudflare Worker s AI modelom, adresa u DATA_CORE.workerUrl, enabled:true.
+   Worker prima {poruke, podaci, sljedecePolje}, vraća {odgovor, podaci}. */
+const DATA_CORE = { workerUrl: "", enabled: false, verzija: "8.0" };
+const WA_BROJ = "385915181266";
+const VRSTE = {
+  tv:{naziv:"TV zid / dekorativna obloga",polja:["tv","dimenzije","rasvjeta"]},
+  spc:{naziv:"SPC zidne obloge",polja:["povrsina","podloga"]},
+  mdf:{naziv:"MDF / akustični paneli",polja:["namjena","povrsina"]},
+  wpc:{naziv:"WPC obloge",polja:["prostor","povrsina"]},
+  ostalo:{naziv:"Ostalo",polja:["opis","dimenzije"]}
 };
+const ZAJEDNICKA=["lokacija","foto","termin","ime","kontakt"];
+const OZNAKE={vrsta:"Vrsta montaže",opis:"Opis posla",tv:"Televizor",dimenzije:"Dimenzije",rasvjeta:"Rasvjeta",povrsina:"Površina",podloga:"Podloga / zid",namjena:"Namjena",prostor:"Unutra / vani",lokacija:"Lokacija",foto:"Fotografija",termin:"Željeni termin",ime:"Ime",kontakt:"Kontakt",napomena:"Napomena"};
+const PITANJA={
+  vrsta:"Što planirate – TV zid, SPC obloge, MDF ili akustične panele, WPC obloge ili nešto drugo?",
+  opis:"Opišite ukratko posao koji trebate.",
+  tv:"Koliki je televizor (u inčima) i hoće li visjeti na zidu?",
+  dimenzije:"Koje su približne dimenzije zida – širina i visina?",
+  rasvjeta:"Želite li LED rasvjetu u zidu ili iza televizora?",
+  povrsina:"Kolika je približna površina u m² (ili širina × visina zida)?",
+  podloga:"Kakva je podloga – ravan žbukani zid, knauf, pločice ili stara obloga?",
+  namjena:"Je li vam važan samo izgled ili i akustika (boravak, ured, studio)?",
+  prostor:"Postavlja se unutra ili vani (fasada, terasa, ograda)?",
+  lokacija:"U kojem mjestu ili dijelu grada je posao?",
+  foto:"Imate li fotografiju prostora? Poslat ćete je u WhatsApp poruci na kraju.",
+  termin:"Kada biste otprilike željeli radove?",
+  ime:"Kako se zovete?",
+  kontakt:"Na koji broj mobitela ili e-mail vas majstor može kontaktirati?"
+};
+const POTVRDE=["U redu.","Zabilježio sam.","Super, hvala.","Jasno.","Odlično.","Razumijem."];
+const BRZI={vrsta:["TV zid","SPC obloge","MDF / akustični paneli","WPC obloge","Nešto drugo"],rasvjeta:["Da, LED","Ne treba"],foto:["Da, imam","Nemam"],prostor:["Unutra","Vani"],namjena:["Samo izgled","I akustika"],termin:["Što prije","Za 2–4 tjedna","Nije hitno"]};
+const state={messages:[],data:{},lastQuestion:null,potvrda:0};
 
-function startChat() {
+function startChat(){
   document.getElementById("start").classList.add("hidden");
   document.getElementById("chat").classList.remove("hidden");
-  const greeting = "Bok! Opišite ukratko što trebate — montaža SPC, MDF, WPC obloga ili nešto drugo. Ja ću pitati samo ono što je bitno.";
-  addMessage("ai", greeting);
-  state.messages.push({ role: "assistant", content: greeting });
-  state.lastQuestion = "opis";
+  ai("Bok, ja sam DATA, digitalni djelatnik EKORUSTIKA GROUP. Radimo SPC, MDF, akustične i WPC obloge te TV zidove u Zagrebu i okolici. Napišite što planirate, a ja ću pitati samo ono što majstoru treba.");
+  state.lastQuestion="vrsta"; prikaziBrze("vrsta");
   document.getElementById("userInput").focus();
 }
-
-function addMessage(role, text) {
-  const div = document.createElement("div");
-  div.className = `msg ${role}`;
-  div.textContent = text;
-  document.getElementById("messages").appendChild(div);
-  const msgs = document.getElementById("messages");
-  msgs.scrollTop = msgs.scrollHeight;
+function ai(t){addMessage("ai",t);state.messages.push({role:"assistant",content:t});}
+function addMessage(role,text){const d=document.createElement("div");d.className="msg "+role;d.textContent=text;const m=document.getElementById("messages");m.appendChild(d);m.scrollTop=m.scrollHeight;}
+function showTyping(){const e=document.createElement("div");e.className="typing";e.id="typing";e.textContent="DATA piše...";const m=document.getElementById("messages");m.appendChild(e);m.scrollTop=m.scrollHeight;}
+function hideTyping(){const e=document.getElementById("typing");if(e)e.remove();}
+function prikaziBrze(p){const b=document.getElementById("quick");b.innerHTML="";(BRZI[p]||[]).forEach(o=>{const c=document.createElement("button");c.className="chip";c.textContent=o;c.onclick=()=>{document.getElementById("userInput").value=o;sendMessage();};b.appendChild(c);});}
+function sendMessage(){
+  const i=document.getElementById("userInput");const text=i.value.trim();if(!text)return;
+  addMessage("user",text);state.messages.push({role:"user",content:text});i.value="";
+  document.getElementById("quick").innerHTML="";showTyping();
+  odgovori(text).then(r=>{hideTyping();if(r.done){showSummary();return;}ai(r.question);prikaziBrze(state.lastQuestion);});
 }
-
-function showTyping() {
-  const el = document.createElement("div");
-  el.className = "typing";
-  el.id = "typing";
-  el.textContent = "Asistent razmišlja...";
-  document.getElementById("messages").appendChild(el);
-  document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+/* Ako je Cloudflare Worker spojen, pita njega; inače radi po pravilima. */
+function odgovori(text){
+  if(DATA_CORE.enabled&&DATA_CORE.workerUrl){
+    return fetch(DATA_CORE.workerUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({poruke:state.messages,podaci:state.data,sljedecePolje:state.lastQuestion})})
+      .then(r=>r.json()).then(j=>{if(j.podaci)Object.assign(state.data,j.podaci);const n=sljedece();if(n.done)return n;return{done:false,question:j.odgovor||n.question};})
+      .catch(()=>pravila(text));
+  }
+  return new Promise(res=>setTimeout(()=>res(pravila(text)),600));
 }
-
-function hideTyping() {
-  const el = document.getElementById("typing");
-  if (el) el.remove();
+function prepoznajVrstu(t){
+  if(/\btv\b|televiz/.test(t))return"tv";
+  if(/spc/.test(t))return"spc";
+  if(/mdf|akust|panel|lamel/.test(t))return"mdf";
+  if(/wpc|fasad|terasa|ograd/.test(t))return"wpc";
+  if(/drugo|ostalo/.test(t))return"ostalo";
+  return null;
 }
-
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  const text = input.value.trim();
-  if (!text) return;
-
-  addMessage("user", text);
-  state.messages.push({ role: "user", content: text });
-  input.value = "";
-
-  // Prvi odgovor ide u opis
-  if (!state.data.opis) state.data.opis = text;
-
-  showTyping();
-
-  setTimeout(() => {
-    hideTyping();
-    const next = decideNextStep(text);
-    if (next.done) {
-      showSummary();
-    } else {
-      addMessage("ai", next.question);
-      state.messages.push({ role: "assistant", content: next.question });
-    }
-  }, 700);
+const MJESTA=/zagreb|samobor|zapre[sš]i|velik[aoj] goric|sesvet|dugo selo|sveta nedelja|jastrebarsk|ivani[cć]|vrbovec|zabok|bestovje|lu[cč]ko|novi zagreb|dubrava|tre[sš]njevk|maksimir|[sš]pansko|stenjevec|podsljeme|okolic/;
+function izvuci(text){
+  const t=text.toLowerCase(),d=state.data;
+  if(!d.vrsta){const v=prepoznajVrstu(t);if(v)d.vrsta=v;}
+  if(!d.lokacija){const m=t.match(MJESTA);if(m)d.lokacija=text.match(new RegExp(m[0]+"[\\wčćžšđ ]*","i"))[0].trim();}
+  if(!d.povrsina){const m=t.match(/(\d+[.,]?\d*)\s*(m2|m²|kvadrat)/);if(m)d.povrsina=m[1]+" m²";}
+  if(!d.tv){const m=t.match(/(\d{2,3})\s*("|inč|inc|col)/);if(m)d.tv=m[1]+" inča";}
+  if(!d.dimenzije){const m=t.match(/\d+[.,]?\d*\s*(m|cm)?\s*[x×]\s*\d+[.,]?\d*\s*(m|cm)?/);if(m)d.dimenzije=m[0];}
+  if(!d.kontakt){const e=text.match(/[\w.+-]+@[\w-]+\.[\w.]+/);const p=text.match(/(\+?\d[\d\s/-]{7,}\d)/);if(e)d.kontakt=e[0];else if(p)d.kontakt=p[0].trim();}
+  if(!d.ime){const m=text.match(/(?:[Zz]ovem se|[Jj]a sam|[Ii]me mi je)\s+([A-ZČĆŽŠĐ][\wčćžšđ]+(?:\s+[A-ZČĆŽŠĐ][\wčćžšđ]+)?)/);if(m)d.ime=m[1];}
 }
-
-function decideNextStep(lastAnswer) {
-  const t = lastAnswer.toLowerCase();
-
-  // Spremi odgovor u polje na koje je asistent upravo pitao
-  if (state.lastQuestion && lastAnswer) {
-    state.data[state.lastQuestion] = lastAnswer;
-    if (state.lastQuestion === "kontakt") {
-      state.data.ime = extractName(lastAnswer);
-    }
+function pravila(text){
+  const t=text.toLowerCase(),q=state.lastQuestion,d=state.data;
+  if(/cijen|ko[sš]ta|koliko.*(eur|€)|ponud|slobodn|kad(a)? (mo[zž]ete|do[dđ]ete)|koliko traje|\brok\b/.test(t)){
+    const n=sljedece();
+    return{done:false,question:"Cijenu, rok i slobodan termin potvrđuje majstor kad pregleda upit, pa vam ih ne bih nagađao. "+(n.done?"":n.question)};
   }
-
-  // Pametno prepoznavanje iz prvog opisa
-  if (state.lastQuestion === "opis" || !state.data.usluga) {
-    if (t.includes("spc")) state.data.usluga = "montaža SPC obloga";
-    else if (t.includes("mdf")) state.data.usluga = "montaža MDF obloga";
-    else if (t.includes("wpc")) state.data.usluga = "montaža WPC obloga";
-    else if (t.includes("oblog")) state.data.usluga = "montaža obloga";
-    else if (t.includes("demontaž")) state.data.usluga = "demontaža";
-    else if (t.includes("montaž") || t.includes("montaz")) state.data.usluga = lastAnswer;
+  izvuci(text);
+  if(q&&!d[q]){
+    if(q==="vrsta")d.vrsta=prepoznajVrstu(t)||"ostalo";
+    else if(q==="ime")d.ime=text.replace(/^(zovem se|ja sam|ime mi je)\s+/i,"").replace(/[\d+@].*$/,"").trim()||text;
+    else d[q]=text;
   }
-
-  // Odredi sljedeće pitanje (preskače ako je već poznato)
-  if (!state.data.usluga) {
-    state.lastQuestion = "usluga";
-    return { done: false, question: "Koju točno uslugu trebate? (SPC, MDF, WPC obloge, demontaža ili nešto drugo?)" };
-  }
-  if (!state.data.lokacija) {
-    state.lastQuestion = "lokacija";
-    return { done: false, question: "Gdje se posao nalazi? Grad, dio grada ili točnija adresa." };
-  }
-  if (!state.data.materijal) {
-    state.lastQuestion = "materijal";
-    return { done: false, question: "Je li materijal već dostavljen i spreman za montažu?" };
-  }
-  if (!state.data.foto) {
-    state.lastQuestion = "foto";
-    return { done: false, question: "Imate li fotografije ili nacrt prostora?" };
-  }
-  if (!state.data.termin) {
-    state.lastQuestion = "termin";
-    return { done: false, question: "Kada biste željeli izvođenje radova?" };
-  }
-  if (!state.data.napomena) {
-    state.lastQuestion = "napomena";
-    return { done: false, question: "Ima li nešto dodatno što bi majstor trebao znati? (možete napisati „nema“)" };
-  }
-  if (!state.data.kontakt) {
-    state.lastQuestion = "kontakt";
-    return { done: false, question: "Kako se zovete i na koji broj ili email da vas možemo kontaktirati?" };
-  }
-
-  return { done: true };
+  if(q==="vrsta"&&d.vrsta==="ostalo"&&!d.opis&&!/drugo|ostalo/.test(t))d.opis=text;
+  let uvod=POTVRDE[state.potvrda++%POTVRDE.length]+" ";
+  if(q==="vrsta")uvod={tv:"TV zid, odlično. ",spc:"SPC obloge, može. ",mdf:"MDF i akustični paneli, može. ",wpc:"WPC obloge, može. ",ostalo:"U redu. "}[d.vrsta];
+  if(q==="lokacija"&&!MJESTA.test(t))uvod="Zabilježio sam. Radimo uglavnom u Zagrebu i okolici, a za dalje lokacije majstor potvrđuje može li doći. ";
+  if(q==="foto")uvod=/^ne|nemam/.test(t)?"Nema problema, može i bez nje. ":"Super, pošaljite je u WhatsApp poruci. ";
+  const n=sljedece();
+  return n.done?n:{done:false,question:uvod+n.question};
 }
-
-function extractFromText(text) {
-  const t = text.toLowerCase();
-
-  // Usluga
-  if (!state.data.usluga) {
-    if (t.includes("kuhinj")) state.data.usluga = "montaža kuhinje";
-    else if (t.includes("demontaž")) state.data.usluga = "demontaža";
-    else if (t.includes("lamel")) state.data.usluga = "postavljanje lamela";
-    else if (t.includes("namještaj") || t.includes("namjestaj")) state.data.usluga = "montaža namještaja";
-    else if (t.includes("montaž") || t.includes("montaz")) state.data.usluga = text;
-  }
-
-  // Lokacija
-  if (!state.data.lokacija && (t.includes("zagreb") || t.includes("samobor") || t.includes("split") || t.includes("rijeka") || t.includes("u ") || t.match(/\d{5}/))) {
-    state.data.lokacija = text;
-  }
-
-  // Materijal
-  if (!state.data.materijal && (t.includes("da") || t.includes("spreman") || t.includes("dostavljen") || t.includes("imam") || t.includes("nema") || t.includes("ne"))) {
-    state.data.materijal = text;
-  }
-
-  // Foto
-  if (!state.data.foto && (t.includes("da") || t.includes("imam") || t.includes("fotograf") || t.includes("nacrt") || t.includes("skic") || t.includes("nemam") || t.includes("ne"))) {
-    state.data.foto = text;
-  }
-
-  // Termin
-  if (!state.data.termin && (t.includes("sutra") || t.includes("tjedan") || t.includes("sljedeći") || t.includes("vikend") || t.match(/\d{1,2}\./))) {
-    state.data.termin = text;
-  }
-
-  // Kontakt (ime + telefon/email)
-  if (!state.data.kontakt && (t.includes("@") || t.match(/\d{6,}/) || t.includes("zovem") || t.includes("ja sam"))) {
-    state.data.kontakt = text;
-    state.data.ime = extractName(text);
-  }
+function sljedece(){
+  const d=state.data;
+  const red=["vrsta"].concat(d.vrsta?VRSTE[d.vrsta].polja:[],ZAJEDNICKA);
+  for(const p of red){if(!d[p]){state.lastQuestion=p;return{done:false,question:PITANJA[p]};}}
+  state.lastQuestion=null;return{done:true};
 }
-
-function extractAll(last) {
-  extractFromText(last);
-  if (!state.data.usluga && state.data.opis) state.data.usluga = state.data.opis;
-}
-
-function extractName(kontakt) {
-  if (!kontakt) return "—";
-  // Ukloni telefon i email
-  let name = kontakt.replace(/[0-9+\-\s]{8,}/g, "").replace(/[\w.-]+@[\w.-]+/g, "").replace(/[,;]/g, " ").trim();
-  const parts = name.split(/\s+/).filter(p => p.length > 1);
-  return parts.slice(0, 3).join(" ") || "—";
-}
-
-function showSummary() {
+function poljaUpita(){const d=state.data;return["vrsta"].concat(d.vrsta?VRSTE[d.vrsta].polja:[],ZAJEDNICKA,["napomena"]);}
+function showSummary(){
   document.getElementById("chat").classList.add("hidden");
   document.getElementById("summary").classList.remove("hidden");
-
-  document.getElementById("s-usluga").textContent = state.data.usluga || state.data.opis || "—";
-  document.getElementById("s-lokacija").textContent = state.data.lokacija || "—";
-  document.getElementById("s-termin").textContent = state.data.termin || "—";
-  document.getElementById("s-materijal").textContent = state.data.materijal || "—";
-  document.getElementById("s-foto").textContent = state.data.foto || "—";
-  document.getElementById("s-ime").textContent = state.data.ime || extractName(state.data.kontakt);
-  document.getElementById("s-kontakt").textContent = state.data.kontakt || "—";
-  document.getElementById("s-napomena").textContent = state.data.napomena || "—";
-
-  const summaryText = generateAISummary(state.data);
-  document.getElementById("ai-summary").innerHTML = `<strong>AI sažetak za majstora:</strong><br>${summaryText}`;
-
-  // Pošalji upit na email
-  sendEmail(summaryText);
-}
-
-function sendEmail(summaryText) {
-  const payload = {
-    _subject: "NOVI UPIT - Ekorustika AI Asistent",
-    usluga: state.data.usluga || state.data.opis || "—",
-    lokacija: state.data.lokacija || "—",
-    termin: state.data.termin || "—",
-    materijal: state.data.materijal || "—",
-    fotografije: state.data.foto || "—",
-    ime: state.data.ime || "—",
-    kontakt: state.data.kontakt || "—",
-    napomena: state.data.napomena || "—",
-    ai_sazetak: summaryText
-  };
-
-  payload._template = "table";
-  payload._captcha = "false";
-  const st = document.getElementById("send-status");
-  st.textContent = "Šaljem upit...";
-  fetch("https://formsubmit.co/ajax/ekorustika@gmail.com", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-    body: JSON.stringify(payload)
-  })
-  .then(r => r.json().then(j => ({ ok: r.ok, j })))
-  .then(({ ok, j }) => {
-    if (ok && String(j.success) === "true") {
-      st.textContent = "✅ Upit je poslan Ekorustici.";
-    } else { throw new Error(); }
-  })
-  .catch(() => {
-    const body = Object.entries(payload).filter(([k]) => !k.startsWith("_")).map(([k,v]) => k + ": " + v).join("\n");
-    st.innerHTML = "⚠️ Automatsko slanje nije uspjelo. <a style='color:#00ff9d' href='mailto:ekorustika@gmail.com?subject=" + encodeURIComponent(payload._subject) + "&body=" + encodeURIComponent(body) + "'>Pošalji upit e-mailom</a>";
+  const box=document.getElementById("s-polja");box.innerHTML="";
+  poljaUpita().forEach(p=>{
+    const f=document.createElement("div");f.className="field";
+    const l=document.createElement("label");l.textContent=OZNAKE[p];
+    const i=document.createElement("input");i.className="edit";i.id="f-"+p;
+    let v=state.data[p]||"";if(p==="vrsta"&&VRSTE[v])v=VRSTE[v].naziv;
+    i.value=v;i.placeholder=p==="napomena"?"(nije obavezno)":"";
+    f.appendChild(l);f.appendChild(i);box.appendChild(f);
   });
 }
-
-function generateAISummary(d) {
-  const usluga = d.usluga || d.opis || "usluga";
-  const lok = d.lokacija || "nedefinirana lokacija";
-  const mat = (d.materijal || "").toLowerCase().includes("da") || (d.materijal || "").toLowerCase().includes("spreman")
-    ? "Materijal je spreman."
-    : "Materijal još nije potvrđen.";
-  const foto = (d.foto || "").toLowerCase().includes("da") || (d.foto || "").toLowerCase().includes("imam")
-    ? "Klijent ima fotografije/nacrt."
-    : "Fotografije/nacrt nisu priloženi.";
-  const term = d.termin || "termin nije naveden";
-  const note = d.napomena && !d.napomena.toLowerCase().includes("nema") ? ` Napomena: ${d.napomena}` : "";
-
-  return `Klijent treba ${usluga.toLowerCase()} na lokaciji ${lok}. ${mat} ${foto} Željeni termin: ${term}.${note} Upit je spreman za pregled.`;
+function procitaj(){const o={};poljaUpita().forEach(p=>{o[p]=document.getElementById("f-"+p).value.trim();});return o;}
+function tekstUpita(o){
+  let s="NOVI UPIT – EKORUSTIKA GROUP\n";
+  poljaUpita().forEach(p=>{if(o[p])s+=OZNAKE[p]+": "+o[p]+"\n";});
+  if(/^da/i.test(o.foto||""))s+="\n(Fotografiju prilažem u nastavku.)";
+  return s;
 }
-
-// Enter to send
-document.getElementById("userInput").addEventListener("keypress", function(e) {
-  if (e.key === "Enter") sendMessage();
-});
+function posaljiWhatsApp(){
+  window.open("https://wa.me/"+WA_BROJ+"?text="+encodeURIComponent(tekstUpita(procitaj())),"_blank");
+  document.getElementById("send-status").textContent="Otvara se WhatsApp s upitom. Provjerite poruku, priložite fotografiju ako je imate i dodirnite ➤.";
+}
+function sendEmail(){
+  const o=procitaj();const payload={_subject:"NOVI UPIT - Ekorustika AI Asistent",_template:"table",_captcha:"false"};
+  poljaUpita().forEach(p=>{payload[OZNAKE[p]]=o[p]||"—";});
+  const st=document.getElementById("send-status");st.textContent="Šaljem upit...";
+  fetch("https://formsubmit.co/ajax/ekorustika@gmail.com",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(payload)})
+  .then(r=>r.json().then(j=>({ok:r.ok,j}))).then(({ok,j})=>{if(ok&&String(j.success)==="true")st.textContent="✅ Upit je poslan Ekorustici e-mailom.";else throw new Error();})
+  .catch(()=>{st.innerHTML="⚠️ Automatsko slanje nije uspjelo. <a style='color:#00ff9d' href='mailto:ekorustika@gmail.com?subject="+encodeURIComponent(payload._subject)+"&body="+encodeURIComponent(tekstUpita(o))+"'>Pošalji upit e-mailom</a>";});
+}
+document.getElementById("userInput").addEventListener("keypress",function(e){if(e.key==="Enter")sendMessage();});
 </script>
+
 <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));}</script>
 </body>
 </html>
